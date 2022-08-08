@@ -18,7 +18,15 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try{
         await client.connect();
-        console.log('database connected');
+        const serviceCollection = client.db('health_care').collection('services');
+
+        // get all services 
+        app.get('/service', async(req, res) => {
+            const query = {};
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
+        });
     }
     finally{
         console.log('app running');
@@ -30,13 +38,8 @@ run().catch(console.dir)
 
 // demo api 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Health Care server running');
 });
-
-
-
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
